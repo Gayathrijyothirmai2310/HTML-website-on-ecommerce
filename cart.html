@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .item { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    img { width: 100%; max-width: 200px; }
+    button { margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>Your Cart</h1>
+  <div id="cart"></div>
+
+  <h3 id="total">Total: $0</h3>
+
+  <h3>Address:</h3>
+  <textarea id="address" rows="3" cols="30"></textarea><br><br>
+
+  <button onclick="placeOrder()">Place Order</button>
+
+  <script>
+    var cart = localStorage.getItem('cart');
+    if (cart) {
+      cart = JSON.parse(cart);
+    } else {
+      cart = [];
+    }
+
+    function showCart() {
+      var cartDiv = document.getElementById('cart');
+      var totalDiv = document.getElementById('total');
+      cartDiv.innerHTML = '';
+      var total = 0;
+
+      if (cart.length == 0) {
+        cartDiv.innerHTML = 'Cart is empty.';
+        totalDiv.innerHTML = 'Total: $0';
+        return;
+      }
+
+      for (var i = 0; i < cart.length; i++) {
+        var item = cart[i];
+        total += Number(item.price);
+
+        var itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+
+        itemDiv.innerHTML =
+          '<img src="' + item.image + '"><br>' +
+          item.name + ' - $' + item.price + '<br>' +
+          '<button onclick="removeItem(' + i + ')">Remove</button>';
+
+        cartDiv.appendChild(itemDiv);
+      }
+
+      totalDiv.innerHTML = 'Total: $' + total.toFixed(2);
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      showCart();
+    }
+
+    function placeOrder() {
+      var address = document.getElementById('address').value;
+
+      if (cart.length == 0) {
+        alert('Cart is empty');
+        return;
+      }
+
+      if (address.trim() == '') {
+        alert('Please enter your address');
+        return;
+      }
+
+      alert('Order placed!\nAddress: ' + address);
+      cart = [];
+      localStorage.setItem('cart', JSON.stringify(cart));
+      showCart();
+      document.getElementById('address').value = '';
+    }
+
+    showCart();
+  </script>
+
+</body>
+</html>
